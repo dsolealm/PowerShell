@@ -21,7 +21,7 @@ Get-DiskInventory.ps1
 EXAMPLE2
 Get-DiskInventory.ps1 "NCL STU M228" 60
 Example 3
-Get-DiskInventory.ps1 -OU "NCL STU M228" -Free 60
+Get-DiskInventory.ps1 -OU "Trevelyan T710" -Free 15
 #>
 
 [CmdletBinding()]
@@ -32,19 +32,21 @@ param (
     $Free
     )
     
-    #Find the Organisational Unit from $OU
-    $OUname = Get-ADOrganizationalUnit -Filter "Name -like '*$OU*'" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DistinguishedName
-   
+    #Find the Organisational Unit from $OU and get the Distinguished Name and Name properties.
+    $OUname = Get-ADOrganizationalUnit -Filter "Name -like '*$OU'" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name
+    $OUDN = Get-ADOrganizationalUnit -Filter "Name -like '*$OU'" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DistinguishedName
+    write-output $OUname
+
     #If the OU is not found, exit
-    if ($OUname -eq $null) {
-        Write-Host "Organisational Unit not found"
+    if ($OUDN -eq $null) {
+        Write-Host "Organisational Unit not found."
         exit
     }
 
 else {
 
      #If more than one OU is found exit.
-     $OUCount = ($OUname).Count
+     $OUCount = ($OUDN).Count
     if ($OUCount -gt 1) {
         Write-Host "Too many Organisational Unit found, consider being more precise please."
         exit
@@ -52,9 +54,16 @@ else {
     else {
 
     #If the OU is found, get the computers in the OU
-    $PCS = Get-ADComputer -LDAPFilter "(name=*)" -SearchBase $OUname -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name
-    Write-Output $OUname
+    $PCS = Get-ADComputer -LDAPFilter "(name=*)" -SearchBase $OUDN -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name
+    $PCSCount = ($PCS).Count
 
+    #If no computers are found in the OU, exit.
+    if ($PCSCount -eq 0) {
+        Write-Host "No computers found in the Organisational Unit."
+        exit
+    }
+    
+    else {
     #CIM query to get the logical disks, free space, size, percentage of free space and the amount of student profiles on each disk
     Get-CimInstance -classname Win32_LogicalDisk -computername $PCS -filter "drivetype=3" -ErrorAction SilentlyContinue | Where-Object { ($_.FreeSpace / $_.Size * 100) -lt $Free } | Format-Table -property PSComputerName,
     @{label='Device';expression={$_.DeviceID}},
@@ -65,15 +74,14 @@ else {
     }
 
 }
-
+}
 #End of script
-
 
 # SIG # Begin signature block
 # MIIOZQYJKoZIhvcNAQcCoIIOVjCCDlICAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCACav1CrJU6zKG+
-# VbblPpvAP5cHrx5UfonweSW1HN20g6CCC68wggU9MIIDJaADAgECAhN8AAAAE6EB
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAfS8j6pCksSe6R
+# XILldZSBDW2HwW8l02b1XtuPyvfebKCCC68wggU9MIIDJaADAgECAhN8AAAAE6EB
 # Xl/JBNfaAAAAAAATMA0GCSqGSIb3DQEBCwUAMEAxEzARBgoJkiaJk/IsZAEZFgNv
 # cmcxFTATBgoJkiaJk/IsZAEZFgVuY2dycDESMBAGA1UEAxMJTkNHUm9vdENBMB4X
 # DTI0MTEyNjE0MzU1NFoXDTI5MTEyMDExMTQxN1owQzETMBEGCgmSJomT8ixkARkW
@@ -140,11 +148,11 @@ else {
 # Y2dycDEVMBMGA1UEAxMMTkNHLU5DTFN1YkNBAhMQAAO1zPCELBcEplgxAAEAA7XM
 # MA0GCWCGSAFlAwQCAQUAoIGEMBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJ
 # KoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQB
-# gjcCARUwLwYJKoZIhvcNAQkEMSIEIIq1NVIhI9sDolLsLcOeci5Kdxg4s4zIM0SU
-# u0nVaxe5MA0GCSqGSIb3DQEBAQUABIIBAHoAL24CWDpPkCcPuKU5z5iRdyV2Ooub
-# Qy0RHdT9iD48tqO43ZTk3Y58zqoe9rzyq/yx1H60HSG+iX5CjH/uP6kCoJslhojL
-# uFJT3k6hOXASOl8FAC5s3sGPyZOuOZ/j84WH2PlkBMXW6S/qxaZVBx3P1oGy68Jg
-# RLcqmDJtwF1qozyEREGL1XTd6x+J48LrLYLolXqvCYy55NGUw+4DxCXVQHDfDHLl
-# Dbu2pgPwHoxRjLzw4V2VCOl2vr2Jkit9PFqUAtpEQWaM7iE2+rQRWIhUn4r69Ie3
-# wnF/2n+r3VwjRzhsDh7/7hsNoiWS6bq0+ZHAIlxw2uz19/WI24UB5gY=
+# gjcCARUwLwYJKoZIhvcNAQkEMSIEIMseephewjTCQbZ3iRiXsYa7eFPXEULMHriA
+# AujrWkcjMA0GCSqGSIb3DQEBAQUABIIBADoyBK0lWp3rLz+t34HHl6KlCHzNdc2C
+# bFn4ryb6EIqVRaxM/tqUUkQzv/+CXuaS0FkRAO0AxT3LTmnemRvEOZjfhlCiTBCS
+# Cq1kCbwbYAH91BXyGZqp5kzhOmQ1r3vR795nQvuYaBxOZbZWodih/8c5G8xWPi3L
+# 1x/1EisEwg6lru5XOHdjac5sYtgu7XHFa+JTr52kNb9C2OML6owFzMAHKGWxNsgL
+# 2SNr3Nm2Q28OPaWJ6r3b/hoMHG6nk53NEB601L875MQ27de1wsuDveupwL/sI1qg
+# v3myzb8oVidcJc5LO0G/LvstgWheF0MZngKJx8HLFZUmyRdQfwGITas=
 # SIG # End signature block
