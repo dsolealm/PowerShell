@@ -4,8 +4,8 @@ Get-DiskInventory retrieves logical disk information from all computers
 of a given Organisational Unit.
 .DESCRIPTION
 Get-DiskInventory uses CIM to retrieve the Win32_LogicalDisk
-instances. The users is propted to supply the value for the paramets of OU
-and minimum free space of its drive.It displays each disk's
+instances. The users is promted to supply the value for the paramets of OU
+and minimum free space of its drive. It displays each disk's
 drive letter, free space, total size, percentage of free space of all 
 computers below the given precentage and the amount of student profiles
 on each disk. 
@@ -80,8 +80,8 @@ else {
 # SIG # Begin signature block
 # MIIOZQYJKoZIhvcNAQcCoIIOVjCCDlICAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAfS8j6pCksSe6R
-# XILldZSBDW2HwW8l02b1XtuPyvfebKCCC68wggU9MIIDJaADAgECAhN8AAAAE6EB
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDG74O24fvgZvZ8
+# cXMo5ZBTUszrHZr5o3LKI3VDzkSFDqCCC68wggU9MIIDJaADAgECAhN8AAAAE6EB
 # Xl/JBNfaAAAAAAATMA0GCSqGSIb3DQEBCwUAMEAxEzARBgoJkiaJk/IsZAEZFgNv
 # cmcxFTATBgoJkiaJk/IsZAEZFgVuY2dycDESMBAGA1UEAxMJTkNHUm9vdENBMB4X
 # DTI0MTEyNjE0MzU1NFoXDTI5MTEyMDExMTQxN1owQzETMBEGCgmSJomT8ixkARkW
@@ -148,11 +148,11 @@ else {
 # Y2dycDEVMBMGA1UEAxMMTkNHLU5DTFN1YkNBAhMQAAO1zPCELBcEplgxAAEAA7XM
 # MA0GCWCGSAFlAwQCAQUAoIGEMBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJ
 # KoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQB
-# gjcCARUwLwYJKoZIhvcNAQkEMSIEIMseephewjTCQbZ3iRiXsYa7eFPXEULMHriA
-# AujrWkcjMA0GCSqGSIb3DQEBAQUABIIBADoyBK0lWp3rLz+t34HHl6KlCHzNdc2C
-# bFn4ryb6EIqVRaxM/tqUUkQzv/+CXuaS0FkRAO0AxT3LTmnemRvEOZjfhlCiTBCS
-# Cq1kCbwbYAH91BXyGZqp5kzhOmQ1r3vR795nQvuYaBxOZbZWodih/8c5G8xWPi3L
-# 1x/1EisEwg6lru5XOHdjac5sYtgu7XHFa+JTr52kNb9C2OML6owFzMAHKGWxNsgL
-# 2SNr3Nm2Q28OPaWJ6r3b/hoMHG6nk53NEB601L875MQ27de1wsuDveupwL/sI1qg
-# v3myzb8oVidcJc5LO0G/LvstgWheF0MZngKJx8HLFZUmyRdQfwGITas=
+# gjcCARUwLwYJKoZIhvcNAQkEMSIEIJz1u7mLr7qgjtTTYRA6g4ws2hgUJcvRewPg
+# gjESSXJOMA0GCSqGSIb3DQEBAQUABIIBAGYCae0ZlKvNQSn4P55mgGl48NoW62kD
+# rWX5kqMWU1my7qvdg2tVTqcu76jksvEjuZ4sVO56ig2UU/k7K549gAgZS75hqa2T
+# CWuaxtadnQbWmXS7VtfL/GuelfZkZXO2u/P6aJZtWhY/QVI1v+HClmAaKAyQIdoX
+# r1gI6gSg6s6pk0Ehew7Dk73kXrBOPHYXovPEKwWdkYcnmMYKEcZEIswaIOb6/9kM
+# PWK0A3//O0NqiXT2+fkuJpnZxN5iImYR2CyuKMks6J+uJOrz6zKMGmF9unN8Gt5o
+# ohmP5ZXi/kp+jeUnmmN6uZUFpdXPeExdwLYn2vH9KJRkCzsxZtPFkXo=
 # SIG # End signature block
