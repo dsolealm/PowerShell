@@ -30,24 +30,50 @@ param (
     $OU,
     [Parameter(Mandatory=$true)]
     $Free
-   )
-
-   $OUname = Get-ADOrganizationalUnit -Filter 'Name -like $OU' | Select-Object -ExpandProperty DistinguishedName
-   $PCS = Get-ADComputer -LDAPFilter "(name=*)" -SearchBase $OUname | Select-Object -ExpandProperty Name
+    )
+    
+    #Find the Organisational Unit from $OU
+    $OUname = Get-ADOrganizationalUnit -Filter "Name -like '*$OU*'" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DistinguishedName
    
-   Get-CimInstance -classname Win32_LogicalDisk -computername $PCS -filter "drivetype=3" -ErrorAction SilentlyContinue | Where-Object { ($_.FreeSpace / $_.Size * 100) -lt $Free } | Format-Table -property PSComputerName,
-   @{label='Device';expression={$_.DeviceID}},
-   @{label='Size(GB)';expression={$_.Size /1GB -as [int]}},
-   @{label='FreeSpace(GB)';expression={$_.FreeSpace /1GB -as [int]}},
-   @{label='%Free';expression={$_.FreeSpace / $_.Size * 100 -as [int]}},
-   @{label='StudentProfiles';expression={(Get-CimInstance -Class Win32_UserProfile -computername $_.PSComputerName | Where-Object {$_.LocalPath -like "C:\Users\s[0-9][0-9]*"} | Select-Object -Property LocalPath).Count}}
+    #If the OU is not found, exit
+    if ($OUname -eq $null) {
+        Write-Host "Organisational Unit not found"
+        exit
+    }
+
+else {
+
+     #If more than one OU is found exit.
+     $OUCount = ($OUname).Count
+    if ($OUCount -gt 1) {
+        Write-Host "Too many Organisational Unit found, consider being more precise please."
+        exit
+    }
+    else {
+
+    #If the OU is found, get the computers in the OU
+    $PCS = Get-ADComputer -LDAPFilter "(name=*)" -SearchBase $OUname -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name
+    Write-Output $OUname
+
+    #CIM query to get the logical disks, free space, size, percentage of free space and the amount of student profiles on each disk
+    Get-CimInstance -classname Win32_LogicalDisk -computername $PCS -filter "drivetype=3" -ErrorAction SilentlyContinue | Where-Object { ($_.FreeSpace / $_.Size * 100) -lt $Free } | Format-Table -property PSComputerName,
+    @{label='Device';expression={$_.DeviceID}},
+    @{label='Size(GB)';expression={$_.Size /1GB -as [int]}},
+    @{label='FreeSpace(GB)';expression={$_.FreeSpace /1GB -as [int]}},
+    @{label='%Free';expression={$_.FreeSpace / $_.Size * 100 -as [int]}},
+    @{label='StudentProfiles';expression={(Get-CimInstance -Class Win32_UserProfile -computername $_.PSComputerName | Where-Object {$_.LocalPath -like "C:\Users\s[0-9][0-9]*"} | Select-Object -Property LocalPath).Count}}
+    }
+
+}
+
+#End of script
 
 
 # SIG # Begin signature block
 # MIIOZQYJKoZIhvcNAQcCoIIOVjCCDlICAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCD9BkR4ijEoWzvO
-# AO5KKXfpMRf3hr7CGn50ZUeuI1GDUqCCC68wggU9MIIDJaADAgECAhN8AAAAE6EB
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCACav1CrJU6zKG+
+# VbblPpvAP5cHrx5UfonweSW1HN20g6CCC68wggU9MIIDJaADAgECAhN8AAAAE6EB
 # Xl/JBNfaAAAAAAATMA0GCSqGSIb3DQEBCwUAMEAxEzARBgoJkiaJk/IsZAEZFgNv
 # cmcxFTATBgoJkiaJk/IsZAEZFgVuY2dycDESMBAGA1UEAxMJTkNHUm9vdENBMB4X
 # DTI0MTEyNjE0MzU1NFoXDTI5MTEyMDExMTQxN1owQzETMBEGCgmSJomT8ixkARkW
@@ -114,11 +140,11 @@ param (
 # Y2dycDEVMBMGA1UEAxMMTkNHLU5DTFN1YkNBAhMQAAO1zPCELBcEplgxAAEAA7XM
 # MA0GCWCGSAFlAwQCAQUAoIGEMBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJ
 # KoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQB
-# gjcCARUwLwYJKoZIhvcNAQkEMSIEIKkPi06+SKKOKfKzwuaz/3U6C3wuTzK+Udtg
-# eoXcP6LWMA0GCSqGSIb3DQEBAQUABIIBAIBifyHPyYpqs4+UX6aJ3nRQn570E/Do
-# k2juBE+l1Dt4pWnwGI4VixONhhCORWzurmJ7eXm7NGQZ50gujyUpNhhW9YzVtwxh
-# ZK7f7nnKWWg+3p1EQO4ieA5NZ0xY+PRq68/ZzqqhxwfSmAi/ljfJlJ8pFh5fnGrY
-# TngcHgbNjdS0vGiZvO2qVsTEeRqWImYsMht81E4xlfw/h2Kk4Y/0v86h+DOeZDC6
-# VXwTf+w/OhgaAKfaNlz+zQmEnT0tZ/4tJT484v8JkWoEFVk6bvOXCwbGaO2hJuDe
-# WKoTgEImHOE/vMkQ6lCNg6zwrZKzhC+56j/Gn6nnBpTpw+ED4rrIDWk=
+# gjcCARUwLwYJKoZIhvcNAQkEMSIEIIq1NVIhI9sDolLsLcOeci5Kdxg4s4zIM0SU
+# u0nVaxe5MA0GCSqGSIb3DQEBAQUABIIBAHoAL24CWDpPkCcPuKU5z5iRdyV2Ooub
+# Qy0RHdT9iD48tqO43ZTk3Y58zqoe9rzyq/yx1H60HSG+iX5CjH/uP6kCoJslhojL
+# uFJT3k6hOXASOl8FAC5s3sGPyZOuOZ/j84WH2PlkBMXW6S/qxaZVBx3P1oGy68Jg
+# RLcqmDJtwF1qozyEREGL1XTd6x+J48LrLYLolXqvCYy55NGUw+4DxCXVQHDfDHLl
+# Dbu2pgPwHoxRjLzw4V2VCOl2vr2Jkit9PFqUAtpEQWaM7iE2+rQRWIhUn4r69Ie3
+# wnF/2n+r3VwjRzhsDh7/7hsNoiWS6bq0+ZHAIlxw2uz19/WI24UB5gY=
 # SIG # End signature block
