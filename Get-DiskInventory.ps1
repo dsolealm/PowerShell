@@ -67,6 +67,7 @@ else {
     else {
     #CIM query to get the logical disks, free space, size, percentage of free space and the amount of student profiles on each disk
     Get-CimInstance -classname Win32_LogicalDisk -computername $PCS -filter "drivetype=3" -ErrorAction SilentlyContinue | Where-Object { ($_.FreeSpace / $_.Size * 100) -lt $Free } | Format-Table -property PSComputerName,
+    @{label='AD Organisational Unit';expression={(Get-ADComputer $_.PSComputerName -Properties CanonicalName).CanonicalName -Split ("/") | Select-Object -Last 2 | Select-Object -First 1}},
     @{label='Device';expression={$_.DeviceID}},
     @{label='Size(GB)';expression={$_.Size /1GB -as [int]}},
     @{label='FreeSpace(GB)';expression={$_.FreeSpace /1GB -as [int]}},
@@ -81,8 +82,8 @@ else {
 # SIG # Begin signature block
 # MIIOZQYJKoZIhvcNAQcCoIIOVjCCDlICAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAOc8c00mpi6hkT
-# Di8zwjbmNtmmIAINOqaYy+lmK0Wmd6CCC68wggU9MIIDJaADAgECAhN8AAAAE6EB
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCD47t752GYJVdrw
+# AvMBC+w/q4vH0hYqxtKjrnpA0ZoR8qCCC68wggU9MIIDJaADAgECAhN8AAAAE6EB
 # Xl/JBNfaAAAAAAATMA0GCSqGSIb3DQEBCwUAMEAxEzARBgoJkiaJk/IsZAEZFgNv
 # cmcxFTATBgoJkiaJk/IsZAEZFgVuY2dycDESMBAGA1UEAxMJTkNHUm9vdENBMB4X
 # DTI0MTEyNjE0MzU1NFoXDTI5MTEyMDExMTQxN1owQzETMBEGCgmSJomT8ixkARkW
@@ -149,11 +150,11 @@ else {
 # Y2dycDEVMBMGA1UEAxMMTkNHLU5DTFN1YkNBAhMQAAO1zPCELBcEplgxAAEAA7XM
 # MA0GCWCGSAFlAwQCAQUAoIGEMBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJ
 # KoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQB
-# gjcCARUwLwYJKoZIhvcNAQkEMSIEINgXqgr8YkT3PMjklEKAhbdY7VWoz6NDtaDU
-# og+AXNCPMA0GCSqGSIb3DQEBAQUABIIBAKY9Y+EYequ3FEX2GY1TIXJuFQj6tplY
-# WPfELb7XdWKPK7PlRsJnGZxx5II1FBWPg62RWQ49Nf6oS5VjsCj3bk2RZxlw7mPf
-# R/AWUe5E1++GVbbvU2EFt80lFwSo3xc9HPGqr95E4mupKDHGPqOt+1rij+QMFOdD
-# R6ElqQDaN50s3pUh2xa+8kb+9oMxPWTD3ut7Aoq6dO/NfC3I8vLkwLDdWu5hWcGp
-# owgt9LSdKSEIEHaTgpG99SkPMqjmCD1IMFdtjmvsREdPAe3a9Je3t8/YbtHRDVOH
-# 6vEOPiU1jWOw8rRT/9+w6qxOooLrYj1fPNJCcgKs68cKhIbhh6EPjMU=
+# gjcCARUwLwYJKoZIhvcNAQkEMSIEIOQa2q055++m5ii3MLOx2bMtyoclDM3uK3Ei
+# 4Aj0QxFfMA0GCSqGSIb3DQEBAQUABIIBAHlakHmTo7PHFBJixexD/lUmM14BzHiu
+# vkrGW7ky+8W8k3PKJCaJYQdy09ELmjVGGv5kOUBstfWvYFZJyy8brC5PLPcvmFrS
+# Rjtx4o2jCjgm8i7QIuchwtfOdmzt0kF2nD/3nvJ1MdCuOsoMQTiZKK1mha3tepiQ
+# UZM8XJHJzABFv5trIc+v52oSZax9Y7VgxI2q6TCE8R/zxcy7c2YUnNGzoArDJ50p
+# /wzM4NKsGgd0Z7iuf0YdfWz7vgcbOCGtlw4/ACeY24GmQEpPPa/4Vb7N5Ux2RvCC
+# zFqFwEvseJDiTJnqOdBpuSRyCu65DtAQlDuWL4kNul23Pv/0sET3FP0=
 # SIG # End signature block
